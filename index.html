@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101311">
+    <title>GLYPH / ASCII 3D Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="models/manifest.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./"><span class="brand-mark">[g]</span> GLYPH <span class="brand-sub">/ ASCII 3D STUDIO</span></a>
+      <span class="local-badge"><span class="dot"></span> LOCAL BY DESIGN</span>
+    </header>
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">GEOMETRY, REDUCED TO CHARACTER.</p><h1>A different kind<br>of dimension<span>.</span></h1></div>
+        <p class="intro-copy">No pixels. Just perspective.<br>Turn a mesh into a moving field of type.<br>Everything happens in your browser.</p>
+      </section>
+      <section class="studio" aria-label="ASCII rendering studio">
+        <div class="viewport-panel">
+          <div class="panel-bar"><div><span class="dot"></span> LIVE VIEWPORT <span class="muted">/ <span id="model-label">NO MODEL</span></span></div><span id="fps">0 FPS</span></div>
+          <div id="viewport" tabindex="0" aria-label="3D viewport. Drag to rotate, scroll to zoom, arrow keys to rotate, plus and minus to zoom.">
+            <pre id="screen" aria-hidden="true"></pre>
+            <div class="viewport-corner top-left">PERSPECTIVE<br>ASCII / SOFTWARE RASTERIZER</div>
+            <div class="viewport-corner bottom-left"><span class="axis">X / Y / Z</span><br><span id="mesh-stats">SELECT OR UPLOAD A MODEL</span></div>
+            <div class="viewport-corner bottom-right">DRAG TO ORBIT<br>SCROLL TO ZOOM</div>
+            <div id="drop-overlay">DROP YOUR .OBJ HERE<span>Geometry stays on your device.</span></div>
+          </div>
+          <div class="viewport-footer"><span id="grid-stats">-- COLUMNS x -- ROWS</span><button id="reset" class="text-button">RESET VIEW &larr;</button><button id="copy" class="text-button">COPY TEXT</button><button id="snapshot" class="text-button">EXPORT .TXT &nearr;</button></div>
+        </div>
+        <aside class="controls">
+          <div class="control-heading"><h2>Control room</h2><span>01 / 03</span></div>
+          <div class="control-section">
+            <label class="section-label" for="model">GEOMETRY</label>
+            <select id="model"><option value="" disabled selected>Select a project model</option></select>
+            <button id="upload" class="upload-button"><span>+</span> Load your own mesh <span>.OBJ</span></button>
+            <input id="file" type="file" accept=".obj,text/plain" hidden>
+            <p class="helper">Wavefront OBJ. Vertices and polygon faces.<br>Drop a file anywhere in the viewport.</p>
+            <p id="message" role="status" aria-live="polite"></p>
+          </div>
+          <div class="control-section">
+            <p class="section-label">RENDERING</p>
+            <div class="range-label"><label for="density">Character density</label><output id="density-value" for="density">140</output></div>
+            <input id="density" type="range" min="60" max="220" step="10" value="140">
+            <div class="range-label"><label for="light">Light intensity</label><output id="light-value" for="light">1.2</output></div>
+            <input id="light" type="range" min="0.4" max="2" step="0.1" value="1.2">
+            <label class="field-label" for="ramp">Character palette</label>
+            <select id="ramp"><option value="classic">Classic / .:-=+*#%@</option><option value="blocks">Dense / 0123456789</option><option value="minimal">Minimal / .:+#</option><option value="binary">Binary / 01</option></select>
+            <label class="field-label" for="mode">Render mode</label>
+            <select id="mode"><option value="solid">Shaded surface</option><option value="wire">Wireframe</option><option value="points">Point cloud</option></select>
+          </div>
+          <div class="control-section motion-section">
+            <div class="range-label"><label for="rotate">Auto-rotate</label><input id="rotate" class="switch" type="checkbox" checked></div>
+            <div class="range-label"><span>Phosphor</span><div class="swatches" aria-label="Viewport color"><button class="swatch active" data-color="#b8f58b" style="--swatch:#b8f58b" aria-label="Green" aria-pressed="true"></button><button class="swatch" data-color="#f2d29b" style="--swatch:#f2d29b" aria-label="Amber" aria-pressed="false"></button><button class="swatch" data-color="#b1d5ff" style="--swatch:#b1d5ff" aria-label="Blue" aria-pressed="false"></button><button class="swatch" data-color="#e5e9e3" style="--swatch:#e5e9e3" aria-label="White" aria-pressed="false"></button></div></div>
+          </div>
+          <div class="control-note"><span>[ i ]</span><p>Light becomes a letter.<br>Depth becomes a feeling.</p></div>
+        </aside>
+      </section>
+      <footer class="page-footer"><span>BUILT FROM NOTHING BUT CHARACTERS.</span><span>NO GPU. NO CLOUD. NO UPLOADS.</span><a href="sample.obj" download>GET SAMPLE .OBJ &nearr;</a></footer>
+    </main>
+  </body>
+</html>
