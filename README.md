@@ -5,6 +5,8 @@ viewport is actual text, not a canvas image or WebGL effect: a software triangle
 rasterizer projects geometry into a character grid, uses a depth buffer for
 occlusion, and maps directional lighting to ASCII characters.
 
+View it live here: https://isaiah-v.github.io/GLYPH/
+
 ## Run
 
 With Node.js installed, run `node serve.js` from the project folder and open
