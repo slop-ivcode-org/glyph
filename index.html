@@ -22,11 +22,11 @@
       <section class="studio" aria-label="ASCII rendering studio">
         <div class="viewport-panel">
           <div class="panel-bar"><div><span class="dot"></span> LIVE VIEWPORT <span class="muted">/ <span id="model-label">NO MODEL</span></span></div><span id="fps">0 FPS</span></div>
-          <div id="viewport" tabindex="0" aria-label="3D viewport. Drag to rotate, scroll to zoom, arrow keys to rotate, plus and minus to zoom.">
+          <div id="viewport" tabindex="0" aria-label="3D viewport. Drag to rotate, Shift and drag to pan, scroll to zoom, arrow keys to rotate, Shift and arrow keys to pan, plus and minus to zoom.">
             <pre id="screen" aria-hidden="true"></pre>
             <div class="viewport-corner top-left">PERSPECTIVE<br>ASCII / SOFTWARE RASTERIZER</div>
             <div class="viewport-corner bottom-left"><span class="axis">X / Y / Z</span><br><span id="mesh-stats">SELECT OR UPLOAD A MODEL</span></div>
-            <div class="viewport-corner bottom-right">DRAG TO ORBIT<br>SCROLL TO ZOOM</div>
+            <div class="viewport-corner bottom-right">DRAG TO ORBIT<br>SHIFT + DRAG TO PAN<br>SCROLL TO ZOOM</div>
             <div id="drop-overlay">DROP YOUR .OBJ HERE<span>Geometry stays on your device.</span></div>
           </div>
           <div class="viewport-footer"><span id="grid-stats">-- COLUMNS x -- ROWS</span><button id="reset" class="text-button">RESET VIEW &larr;</button><button id="copy" class="text-button">COPY TEXT</button><button id="snapshot" class="text-button">EXPORT .TXT &nearr;</button></div>
@@ -47,8 +47,13 @@
             <input id="density" type="range" min="60" max="220" step="10" value="140">
             <div class="range-label"><label for="light">Light intensity</label><output id="light-value" for="light">1.2</output></div>
             <input id="light" type="range" min="0.4" max="2" step="0.1" value="1.2">
+            <div class="range-label"><label for="ambient">Ambient light</label><output id="ambient-value" for="ambient">0.12</output></div>
+            <input id="ambient" type="range" min="0" max="1" step="0.01" value="0.12">
+            <div class="range-label"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast">1.0</output></div>
+            <input id="contrast" type="range" min="0.2" max="3" step="0.1" value="1">
+            <p class="helper">Ambient lifts shadows. Higher contrast darkens midtones.<br>For the widest range: ambient 0, intensity 1, contrast 1. Point clouds use a fixed shade.</p>
             <label class="field-label" for="ramp">Character palette</label>
-            <select id="ramp"><option value="classic">Classic / .:-=+*#%@</option><option value="blocks">Dense / 0123456789</option><option value="minimal">Minimal / .:+#</option><option value="binary">Binary / 01</option></select>
+            <select id="ramp"><option value="classic">Classic / .:-=+*#%@</option><option value="standard">Standard /  .'`^",:;Il...</option><option value="minimal">Minimal / .:+#</option></select>
             <label class="field-label" for="mode">Render mode</label>
             <select id="mode"><option value="solid">Shaded surface</option><option value="wire">Wireframe</option><option value="points">Point cloud</option></select>
           </div>

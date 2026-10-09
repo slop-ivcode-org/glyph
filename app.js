@@ -4,11 +4,15 @@
   const $ = (id) => document.getElementById(id);
   const viewport = $('viewport');
   const screen = $('screen');
-  const ramps = { classic: ' .:-=+*#%@', blocks: ' 0123456789', minimal: ' .:+#', binary: ' 01' };
+  const ramps = {
+    classic: ' .:-=+*#%@',
+    standard: " `.-,:/!{+?1icovC0faZ8dbm@#QWM",
+    minimal: ' .:+#'
+  };
   const projectModels = new Map();
   let selectedModel = '';
   let modelRequest = 0;
-  const state = { mesh: null, yaw: .5, pitch: .35, zoom: 1, columns: 140, rows: 60, mode: 'solid', ramp: ramps.classic, intensity: 1.2 };
+  const state = { mesh: null, yaw: .5, pitch: .35, zoom: 1, panX: 0, panY: 0, fitScale: 1, columns: 140, rows: 60, mode: 'solid', ramp: ramps.classic, intensity: 1.2, ambient: .12, contrast: 1 };
   let depth, shades, lastTime = 0, fpsStart = 0, frames = 0, drag = null;
 
   function normalizeMesh(vertices, faces) {
@@ -58,7 +62,16 @@
     reset();
   }
 
-  function reset() { state.yaw = .5; state.pitch = .35; state.zoom = 1; }
+  function reset() { state.yaw = .5; state.pitch = .35; state.zoom = 1; state.panX = 0; state.panY = 0; }
+
+  function projectionScale() { return Math.min(state.columns * .6, state.rows) * 1.15 * state.fitScale * state.zoom; }
+
+  function pan(dx, dy) {
+    // Convert viewport fractions to camera-plane offsets at the mesh center's depth.
+    const scale = projectionScale();
+    state.panX += dx * state.columns * .6 * 3.6 / scale;
+    state.panY -= dy * state.rows * 3.6 / scale;
+  }
 
   function resize() {
     const width = viewport.clientWidth, height = viewport.clientHeight;
@@ -116,10 +129,10 @@
         const rx = x * cy + z * sy, rz = -x * sy + z * cy;
         return [rx, y * cp - rz * sp, y * sp + rz * cp];
       });
-      const scale = Math.min(state.columns * .6, state.rows) * 1.15 * state.fitScale * state.zoom;
+      const scale = projectionScale();
       const projected = transformed.map(([x, y, z]) => {
         const distance = z + 3.6;
-        return [state.columns / 2 + x * scale / (.6 * distance), state.rows / 2 - y * scale / distance, distance];
+        return [state.columns / 2 + (x + state.panX) * scale / (.6 * distance), state.rows / 2 - (y + state.panY) * scale / distance, distance];
       });
       if (state.mode === 'points') {
         for (const p of projected) plot(p[0], p[1], p[2], .8);
@@ -133,7 +146,7 @@
           if (length < .000001) continue;
           // Two-sided lighting also supports OBJ files with inconsistent face winding.
           const diffuse = Math.abs((nx * -.35 + ny * .65 - nz * .68) / length);
-          const shade = Math.min(1, (.12 + diffuse * .88) * state.intensity);
+          const shade = Math.pow(Math.min(1, (state.ambient + diffuse * (1 - state.ambient)) * state.intensity), state.contrast);
           if (state.mode === 'wire') {
             edge(projected[i], projected[j], shade); edge(projected[j], projected[k], shade); edge(projected[k], projected[i], shade);
           } else triangle(projected[i], projected[j], projected[k], shade);
@@ -144,7 +157,7 @@
         let line = '';
         for (let x = 0; x < state.columns; x++) {
           const index = y * state.columns + x;
-          line += depth[index] === Infinity ? ' ' : state.ramp[Math.max(1, Math.round(shades[index] * (state.ramp.length - 1)))];
+          line += depth[index] === Infinity ? ' ' : state.ramp[Math.max(state.ramp[0] === ' ' ? 1 : 0, Math.round(shades[index] * (state.ramp.length - 1)))];
         }
         lines.push(line);
       }
@@ -251,13 +264,19 @@
   });
   viewport.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
+    viewport.focus({ preventScroll: true });
     drag = { x: event.clientX, y: event.clientY };
     viewport.setPointerCapture(event.pointerId);
   });
   viewport.addEventListener('pointermove', (event) => {
     if (!drag) return;
-    state.yaw += (event.clientX - drag.x) * .008;
-    state.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, state.pitch + (event.clientY - drag.y) * .008));
+    const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+    if (event.shiftKey) {
+      pan(dx / viewport.clientWidth, dy / viewport.clientHeight);
+    } else {
+      state.yaw -= dx * .008;
+      state.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, state.pitch - dy * .008));
+    }
     drag = { x: event.clientX, y: event.clientY };
   });
   viewport.addEventListener('pointerup', () => { drag = null; });
@@ -268,15 +287,24 @@
   viewport.addEventListener('keydown', (event) => {
     if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-'].includes(event.key)) return;
     event.preventDefault();
-    if (event.key === 'ArrowLeft') state.yaw -= .1;
-    if (event.key === 'ArrowRight') state.yaw += .1;
-    if (event.key === 'ArrowUp') state.pitch = Math.max(-Math.PI / 2, state.pitch - .1);
-    if (event.key === 'ArrowDown') state.pitch = Math.min(Math.PI / 2, state.pitch + .1);
+    if (event.shiftKey) {
+      if (event.key === 'ArrowLeft') pan(-.04, 0);
+      if (event.key === 'ArrowRight') pan(.04, 0);
+      if (event.key === 'ArrowUp') pan(0, -.04);
+      if (event.key === 'ArrowDown') pan(0, .04);
+    } else {
+      if (event.key === 'ArrowLeft') state.yaw += .1;
+      if (event.key === 'ArrowRight') state.yaw -= .1;
+      if (event.key === 'ArrowUp') state.pitch = Math.min(Math.PI / 2, state.pitch + .1);
+      if (event.key === 'ArrowDown') state.pitch = Math.max(-Math.PI / 2, state.pitch - .1);
+    }
     if (event.key === '+' || event.key === '=') zoom(1.1);
     if (event.key === '-') zoom(1 / 1.1);
   });
   $('density').addEventListener('input', () => { $('density-value').value = $('density').value; resize(); });
   $('light').addEventListener('input', () => { state.intensity = Number($('light').value); $('light-value').value = state.intensity.toFixed(1); });
+  $('ambient').addEventListener('input', () => { state.ambient = Number($('ambient').value); $('ambient-value').value = state.ambient.toFixed(2); });
+  $('contrast').addEventListener('input', () => { state.contrast = Number($('contrast').value); $('contrast-value').value = state.contrast.toFixed(1); });
   $('ramp').addEventListener('change', () => { state.ramp = ramps[$('ramp').value]; });
   $('mode').addEventListener('change', () => { state.mode = $('mode').value; });
   $('reset').addEventListener('click', reset);

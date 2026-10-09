@@ -19,10 +19,18 @@ but loading project model paths requires the static server.
 
 - The model list comes entirely from OBJ files in `models`; the first entry loads
   automatically. There are no hardcoded meshes.
-- Drag to orbit; scroll to zoom. The focused viewport also supports arrow keys
-  and `+` / `-`.
+- Drag to orbit; hold Shift while dragging to pan up, down, left, or right;
+  scroll to zoom. The focused viewport also supports arrow keys to orbit,
+  Shift + arrow keys to pan, and `+` / `-` to zoom. Reset View recenters the
+  camera and restores the default orbit and zoom.
 - Switch between shaded surfaces, wireframes, and point clouds.
 - Adjust character density, lighting, character palette, and phosphor color.
+- Ambient light controls the shadow floor; contrast above 1 darkens midtones,
+  while values below 1 brighten them. For the widest shading range, use ambient
+  0, light intensity 1, and contrast 1. These lighting controls affect shaded
+  surfaces and wireframes; point clouds use a fixed shade.
+- Choose the Standard character palette for a light-to-dense ASCII shading ramp,
+  with punctuation in shadows and dense characters such as `$` in highlights.
 - Pause automatic rotation or reset the camera.
 - Export the current frame as a plain-text `.txt` file.
 - Copy the current frame to the clipboard, preserving ASCII spacing and line breaks.
