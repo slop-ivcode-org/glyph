@@ -17,6 +17,10 @@ window.GLYPH_MODELS = [
         "path":  "models/octahedron.obj"
     },
     {
+        "name":  "lucky_cat.obj",
+        "path":  "models/lucky_cat.obj"
+    },
+    {
         "name":  "adventurer_boy.obj",
         "path":  "models/adventurer_boy.obj"
     }
